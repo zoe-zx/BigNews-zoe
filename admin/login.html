@@ -91,6 +91,7 @@
         success:function(backData){
           console.log(backData);
           if(backData.code==200){
+            window.localStorage.setItem('token',backData.token)
             // alert('登录成功')
             $('#myModal').modal()
             $('#myModal .modal-body>p').text('登录成功');
@@ -101,6 +102,7 @@
             // alert(backData.msg)
             $('#myModal').modal()
             $('#myModal .modal-body>p').text(backData.msg);
+            
           }
         }
         
