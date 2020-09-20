@@ -44,7 +44,7 @@
                     <label for="inputPassword3" class="col-sm-2 control-label">用户图标：</label>
                     <div class="col-sm-10">
                         <img src="images/2.jpg" alt="" class="user_pic">
-                        <input style="display: block" name="userPic" type="file" id="exampleInputFile">
+                        <input style="display: none" name="userPic" type="file" id="exampleInputFile">
                         <!-- 给label标签的for属性赋值,值是input标签的id,那这样的话点击label就相当于点击了input -->
                         <br>
                         <label for="exampleInputFile">
@@ -68,6 +68,71 @@
             </form>
         </div>
     </div>
+
+
+
+    <script src="./libs/http.js"></script>
+    <script>
+        $(function () {
+            // 获取用户详情
+            $.ajax({
+                url: bigNews.user_detail,
+                type: 'get',
+                dataType: 'json',
+                success: function (backData) {
+                    console.log(backData);
+                    // 通过遍历对象来设置表单元素value值
+                    for (let key in backData.data) {
+                        $('.' + key).val(backData.data[key])
+                    }
+
+                    // $('.username').val(backData.data.username);
+                    // $('.nickname').val(backData.data.nickname);
+                    // $('.email').val(backData.data.email);
+                    // $('.password').val(backData.data.password);
+                    $('.user_pic').attr('src', backData.data.userPic)
+
+                }
+            })
+            // 文件预览
+            $('#exampleInputFile').on('change',function(){
+                console.log(this.files);//存储图片信息的属性,Dom元素的表单文件files属性
+                // 获取用户选择的文件
+                let file=this.files[0];
+                // 将二进制图片转换为url路径
+                let url=URL.createObjectURL(file);
+                // 将url路径作为img标签src路径
+                $('.user_pic').attr('src',url)
+            })
+            // 文件上传
+            $('.btn-edit').on('click',function(e){
+                // 阻止默认跳转
+                e.preventDefault();
+                // 获取表单参数,固定语法
+                let fd=new FormData($('#form')[0])//要表单的Don元素状态才调用
+                // ajax发送修改的请求
+                $.ajax({
+                    url:bigNews.user_edit,
+                    type:'post',
+                    dataType:'json',
+                    data:fd,
+                    // 取消发送默认请求头
+                    contentType:false,
+                    // 取消自动拼接参数
+                    processData:false,
+                    success:function(backData){
+                        console.log(backData);
+                        alert('修改成功!')
+                        if(backData.code==200){
+                            window.parent.location.href='./index.html'
+                        }
+
+                    }
+                })
+            })
+            
+        })
+    </script>
 </body>
 
 </html>
