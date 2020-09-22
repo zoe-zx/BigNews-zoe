@@ -72,6 +72,85 @@
             </div>
         </div>
     </div>
+    <!-- 渲染所有分类的模板引擎 -->
+    <script id="cat_list" type="text/html">
+        <option value="">所有分类</option>
+        {{each data v}}
+        <option value="{{v.id}}">{{v.name}}</option>
+        {{/each}}
+    </script>
+
+    <!-- 渲染文章的模板引擎 -->
+    <script id="art_query" type="text/html">
+        {{each data.data v}}
+        <tr>
+            <td>{{v.title}}</td>
+            <td>{{v.author}}</td>
+            <td>{{v.category}}</td>
+            <td class="text-center">{{v.date}}</td>
+            <td class="text-center">{{v.state}}</td>
+            <td class="text-center">
+                <a data_id='{{v.id}}' href="article_edit.html" class="btn btn-default btn-xs btn-edit">编辑</a>
+                <a data_id='{{v.id}}' href="javascript:void(0);" class="btn btn-danger btn-xs btn-delete">删除</a>
+            </td>
+        </tr>
+        {{/each}}
+    </script>
+
+    <script src="./libs/http.js"></script>
+    <script>
+        // $('#selCategory').on
+        $(function () {
+            // 页面一加载,所有分类中的类别更新为文章类别中的所有项
+            $.ajax({
+                url: bigNews.category_list,
+                type: 'get',
+                dataType: 'json',
+                success: function (backData) {
+                    console.log(backData);
+                    $('#selCategory').html(template('cat_list', backData))
+                }
+            })
+            // 页面一加载，所有自动加载文章
+            $.ajax({
+                url: bigNews.article_query,
+                type: 'get',
+                dataType: 'json',
+                data: {
+                    type: '',
+                    state: '',
+                    page: 1,
+                    perpage: 10
+                },
+                success: function (backData) {
+                    console.log(backData);
+                    $('.table>tbody').html(template('art_query',backData))
+                }
+            })
+            // 筛选文章类别
+            $('#btnSearch').on('click',function(e){
+                // 阻止默认跳转
+                e.preventDefault();
+                $.ajax({
+                url: bigNews.article_query,
+                type: 'get',
+                dataType: 'json',
+                data: {
+                    type: $('#selCategory').val(),
+                    state: $('#selStatus').val(),
+                    page: 1,
+                    perpage: 10
+                },
+                success: function (backData) {
+                    console.log(backData);
+                    $('.table>tbody').html(template('art_query',backData))
+                }
+            })
+
+            })
+
+        })
+    </script>
 </body>
 
 </html>
